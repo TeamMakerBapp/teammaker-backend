@@ -3,10 +3,12 @@ import { MyApplication } from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
+import { loadControllers } from './lib/controller/loadControllers';
 
 import fs from "fs";
-
 const env = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
+
+
 const app = new MyApplication();
 
 addPipeBeforeCreateRestrictedUser(app);
@@ -15,6 +17,8 @@ addPipeAfterCreateRestrictedUser(app);
 
 const customUser = new CustomUser(app);
 app.controller.use(customUser);
+
+loadControllers(app);
 
 app.config.content.plugins["passport-oauth"] = {
   // List of the providers you want to use with passport
