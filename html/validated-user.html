@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Validation</title>
+    <style>
+	a {
+	color: #fff;
+	}
+	p, a span {
+	    color: #000;
+	}
+      .button {
+          display: none;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        text-align: center;
+        padding: 20px;
+      }
+      .message {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <div class="message">
+    <h2> Your Team Make user has been validated!</h2>
+    <p> You can close this page now.</p><br>
+    <a id="btn" class="button" href="{{link}}">Return to the app</a>
+  </div>
+  <script>
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+	var btn = document.getElementById("btn");
+	btn.href += window.location.search.substring(1);
+	document.getElementById("btn").click();
+    }
+  </script>
+</html>
+

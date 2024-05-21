@@ -4,11 +4,7 @@ import PluginPassportOAuth from "kuzzle-plugin-auth-passport-oauth";
 import { HermesMessengerPlugin } from "kuzzle-plugin-hermes-messenger";
 
 export type MyApplicationConfig = {
-  someValue: string;
-
-  another: {
-    value: number;
-  };
+	hostAddress: string 
 };
 
 export class MyApplication extends Backend {
@@ -16,7 +12,7 @@ export class MyApplication extends Backend {
   private prometheusPlugin = new PrometheusPlugin();
   private passportOauthPlugin = new PluginPassportOAuth();
   private hermesMessengerPlugin = new HermesMessengerPlugin();
-
+  
   get appConfig() {
     return this.config.content.application as MyApplicationConfig;
   }
@@ -43,6 +39,7 @@ export class MyApplication extends Backend {
   }
 
   async configureSmtp(config) {
+    console.log(config);
     await this.sdk.query({
       account: config.account,
       action: "addAccount",

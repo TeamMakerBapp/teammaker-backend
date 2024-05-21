@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import { MyApplication } from "./lib/MyApplication";
+import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
@@ -7,8 +7,14 @@ import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pip
 import fs from "fs";
 
 const env = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
-const app = new MyApplication();
-
+var hostAddress = "localhost";
+if (env.config && env.config.hostAddress){
+	hostAddress = env.config.hostAddress;	
+}
+const config: MyApplicationConfig = {
+    hostAddress: hostAddress 
+};
+const app = new MyApplication(config);
 addPipeBeforeCreateRestrictedUser(app);
 //addPipeBeforeCreateUser(app);
 addPipeAfterCreateRestrictedUser(app);
@@ -29,7 +35,7 @@ if (env.oauth) {
             "248704848225-abvib4t5sh7jpolqurk39vcioklfdgo2.apps.googleusercontent.com",
           clientSecret: env.oauth.clientsecret,
           //  "callbackURL": "http://149.50.128.59:7512/_login/google",
-          callbackURL: "http://localhost:1593/_login/app",
+          callbackURL: "http://localhost:7512/_/custom-user/auth-code",
           profileFields: ["id", "name", "picture", "email", "gender"],
         },
         // Attributes you want to persist in the user credentials object if the user doesn't exist
@@ -66,7 +72,7 @@ app.start().then(async function (){
     await app.sdk.security.createOrReplaceProfile("profile-non-validated-users", profileNonValidatedUsers);
     await app.sdk.security.createOrReplaceProfile("profile-validated-users", profileValidatedUsers);
     if(env.smtpConfig){ 
-      if (env.smtpConfig.enabled){
+      if (env.smtpConfig.enable){
         app.configureSmtp(env.smtpConfig);
       }
     } else {
