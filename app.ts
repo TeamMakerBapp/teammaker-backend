@@ -9,11 +9,18 @@ import fs from "fs";
 
 const env = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
 var hostAddress = "localhost";
+var deeplink = "teamake://";
 if (env.config && env.config.hostAddress){
-	hostAddress = env.config.hostAddress;	
+	if (env.config.hostAddress){
+		hostAddress = env.config.hostAddress;	
+	}
+	if (env.config.deeplink){
+		deeplink = env.config.deeplink;
+	}
 }
 const config: MyApplicationConfig = {
-    hostAddress: hostAddress 
+    hostAddress: hostAddress,
+    deeplink: deeplink
 };
 const app = new MyApplication(config);
 addPipeBeforeCreateRestrictedUser(app);

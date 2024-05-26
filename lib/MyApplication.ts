@@ -4,7 +4,8 @@ import PluginPassportOAuth from "kuzzle-plugin-auth-passport-oauth";
 import { HermesMessengerPlugin } from "kuzzle-plugin-hermes-messenger";
 
 export type MyApplicationConfig = {
-	hostAddress: string 
+	hostAddress: string, 
+	deeplink: string
 };
 
 export class MyApplication extends Backend {

@@ -48,7 +48,7 @@ export class CustomUser extends Controller {
       status: 200
     });
     let myApp = this.app as MyApplication;
-    let url = "exp://"+myApp.configuration.hostAddress+":8081/--/Test?code="+code;
+    let url = myApp.configuration.deeplink+"/Test?code="+code;
     let html = fs.readFileSync('html/validated-user.html', 'utf-8');
     html = html.replace("{{link}}", url);
     return html;
@@ -153,7 +153,7 @@ export class CustomUser extends Controller {
       status: 200
     });
     let myApp = this.app as MyApplication;
-    let url = "exp://"+myApp.configuration.hostAddress+":8081/--/Test";
+    let url = myApp.configuration.deeplink+"/Test";
     let html = fs.readFileSync('html/validated-user.html', 'utf-8');
     html = html.replace("{{link}}", url);
     return html;
