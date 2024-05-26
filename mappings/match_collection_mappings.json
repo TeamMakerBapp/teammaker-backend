@@ -1,0 +1,17 @@
+{
+	"dynamic": "true",
+	"properties": {
+		"id": { "type": "keyword" },
+		"club": {
+			"properties": {
+				"location": { "type": "geo_point" },
+				"address": { "type": "text" }
+			}
+		},
+		"date": { "type": "date" },
+		"team_size": { "type": "integer" },
+		"price": { "type": "integer" },
+		"team_a_players": { "type": "keyword" },
+		"team_b_players": { "type": "keyword" }
+	}
+}

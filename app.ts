@@ -1,9 +1,10 @@
 /* eslint-disable sort-keys */
 import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
+import { MatchesApi } from "./lib/matches/matchesApi";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
-
+import { initializeDatabases } from "./lib/initializeDB";
 import fs from "fs";
 
 const env = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
@@ -21,6 +22,8 @@ addPipeAfterCreateRestrictedUser(app);
 
 const customUser = new CustomUser(app);
 app.controller.use(customUser);
+const matchesApi = new MatchesApi(app);
+app.controller.use(matchesApi);
 
 if (env.oauth) {
   app.config.content.plugins["passport-oauth"] = {
@@ -78,4 +81,5 @@ app.start().then(async function (){
     } else {
       console.log("\x1b[37;46;1mSMTP not configured\x1b[0m");
     }
+    await initializeDatabases(app);
 });

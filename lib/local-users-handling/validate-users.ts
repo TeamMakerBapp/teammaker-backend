@@ -39,7 +39,6 @@ export class CustomUser extends Controller {
   }
  
   async authCode(request: KuzzleRequest){
-     console.log(request.input.args);
      const {code} =  request.input.args;
      request.response.configure({
       headers: {
