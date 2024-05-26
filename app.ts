@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys */
 import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
+import { MatchesApi } from "./lib/matches/matchesApi";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { initializeDatabases } from "./lib/initializeDB";
@@ -21,7 +22,8 @@ addPipeAfterCreateRestrictedUser(app);
 
 const customUser = new CustomUser(app);
 app.controller.use(customUser);
-
+const matchesApi = new MatchesApi(app);
+app.controller.use(matchesApi);
 
 if (env.oauth) {
   app.config.content.plugins["passport-oauth"] = {

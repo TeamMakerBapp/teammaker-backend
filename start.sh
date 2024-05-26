@@ -7,4 +7,3 @@ fi
 
 echo "Starting application..."
 npm run dev
-echo "Hola"

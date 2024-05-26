@@ -5,9 +5,9 @@
 		"club": {
 			"properties": {
 				"location": { "type": "geo_point" },
-				"address": { "type": "text" },
+				"address": { "type": "text" }
 			}
-		}
+		},
 		"date": { "type": "date" },
 		"team_size": { "type": "integer" },
 		"price": { "type": "integer" },

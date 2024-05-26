@@ -9,13 +9,16 @@ export async function initializeDatabases(app : Backend){
 	}
 	if (! (await indexExists(app, "matches"))){
 		await indexCreate(app, "matches");
+	}
+	if (! (await collectionExists(app, "matches", "matches_collection"))){
+		
 		const mappings = JSON.parse(fs.readFileSync("./mappings/match_collection_mappings.json", "utf-8"));
-	//	await collectionCreate(app, "matches", "matches_collection", mappings);
+		await collectionCreate(app, "matches", "matches_collection", mappings);
 	}
 }
 
 async function collectionExists(app: Backend, index: String, collection: String){
-	let response = await app.sdk.squery({
+	let response = await app.sdk.query({
 		"index": index,
 		"collection": collection,
 		"controller": "collection",
@@ -26,7 +29,7 @@ async function collectionExists(app: Backend, index: String, collection: String)
 }
 
 async function collectionCreate(app: Backend, index: String, collection: String, mappings){
-	let response = await app.sdk.squery({
+	let response = await app.sdk.query({
 		"index": index,
 		"collection": collection,
 		"controller": "collection",
@@ -45,7 +48,6 @@ async function indexExists(app : Backend, index: String){
 		"controller": "index",
 		"action": "exists"
         });
-	console.log("Response:___________"+JSON.stringify(response));
 	return response["result"];
 }
 
@@ -55,6 +57,5 @@ async function indexCreate(app: Backend, index: String){
 		"controller": "index",
 		"action": "create"
 	});
-	console.log("Response:___________"+JSON.stringify(response));
 	return response["result"];
 }
