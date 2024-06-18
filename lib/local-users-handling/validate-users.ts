@@ -141,9 +141,25 @@ export class CustomUser extends Controller {
             let body = {
               profileIds: ['profile-validated-users']
             }
-            this.app.sdk.security.updateUser(username, body);
+            this.app.sdk.security.updateUser(username, body)
           } 
-        } else{
+          if ( !this.app.sdk.query({
+            "index": "chat",
+            "collection": user_data._id,
+            "controller": "collection",
+            "action": "exists"})["result"]) {
+              const chat_mapping = JSON.parse(fs.readFileSync("./mappings/chat_collection_mapping.json", "utf-8"));
+              this.app.sdk.query({
+                  "index": "chat",
+                  "collection": user_data._id,
+                  "controller": "collection",
+                  "action": "create",
+                  "body": {
+                    "mappings": chat_mapping
+                  }
+              });
+            }
+        } else {
           throw new BadRequestError("Invalid token")
         }
     } catch (e) {
