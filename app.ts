@@ -6,8 +6,9 @@ import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pi
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { initializeDatabases } from "./lib/initializeDB";
 import fs from "fs";
+declare var env : any
+globalThis.env  = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
 
-const env = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
 var hostAddress = "localhost";
 var deeplink = "teamake://";
 if (env.config && env.config.hostAddress){
