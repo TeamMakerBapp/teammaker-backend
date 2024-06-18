@@ -97,18 +97,22 @@ export class CustomUser extends Controller {
         let html = fs.readFileSync('html/validation-mail.html', 'utf-8');
         html = html.replace("{{link}}", url);
 	html = html.replace("{{date}}", (new Date()).toString());
-        this.app.sdk.query( {
-          "controller": "hermes/smtp",
-          "action": "sendEmail",
-          "account": "contact",
-          "body": {
-            "to": [
-              email
-            ],
-            "subject": "Validate your TeamMake user!",
-            "html": html 
-          }
-        });
+        if (global.env.smtp) {
+          this.app.sdk.query( {
+            "controller": "hermes/smtp",
+            "action": "sendEmail",
+            "account": "contact",
+            "body": {
+              "to": [
+                email
+              ],
+              "subject": "Validate your TeamMake user!",
+              "html": html
+            }
+          });
+        } else {
+          console.log("\x1b[37;46;1mSMTP not configured. To validate the user visit: "+url+"\x1b[0m");
+        }
       }
 
     } else {
