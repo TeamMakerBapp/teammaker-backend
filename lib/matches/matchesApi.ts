@@ -24,12 +24,55 @@ export class MatchesApi extends Controller {
 				addPlayer: {
 					handler: this.addPlayer,
 					http: [{ verb: 'post', path: 'matches-api/add-player'}]
+				},
+				updateTeams: {
+					handler: this.updateTeams,
+					http: [{ verb: 'post', path: 'matches-api/update-teams'}]
+				},
+				removePlayer: {
+					handler: this.removePlayer,
+					http: [{ verb: 'post', path: 'matches-api/remove-player'}]
 				}
 			}
-		};
+		}
+		
 	}
 
-	
+	/*
+	{
+	  "controller": "matches-api",
+	  "action": "updateTeams",
+	  "body": {
+	    "match_id": "S1rDrJAB1gR4eFQO8BNY",
+	    "team_a": ["testplayer", "pablo"],
+	    "team_b": ["testplayer2"]
+	  }
+	}
+	*/
+	async updateTeams( request: KuzzleRequest) {
+		const body = request.input.body;
+		const user = request.getUser()._id;
+		const match = await this.app.sdk.document.get("matches", "matches_collection", body.match_id);
+		if (user === match._source.owner)
+		{
+			// Verify that the players are in the match
+			for (let i = body.team_a.length - 1; i >=0; i--)
+			{
+				if (match._source.players.indexOf(body.team_a[i]) === -1)
+					body.team_a.splice(i,1);
+			}
+			for (let i = body.team_b.length - 1; i >=0; i--)
+			{
+				if (match._source.players.indexOf(body.team_b[i]) === -1)
+					body.team_b.splice(i,1);
+			}
+			return this.app.sdk.document.update("matches", "matches_collection", body.match_id, {		
+	"team_a_players" : body.team_a, "team_b_players": body.team_b});
+
+		}
+	}
+
+
 	/*
 	 {
 	  "controller": "matches-api",
@@ -56,6 +99,46 @@ export class MatchesApi extends Controller {
 
 		} else {
 			throw new BadRequestError("Only the owner of the match can add players");
+		}
+	}
+
+
+	/*
+	 {
+	  "controller": "matches-api",
+	  "action": "removePlayer",
+	  "body": {
+	    "match_id": "S1rDrJAB1gR4eFQO8BNY",
+	    "player": "testplayer"
+	  }
+	}
+	*/
+	async removePlayer(request: KuzzleRequest){
+		const body = request.input.body;
+		const user = request.getUser()._id;
+		const player = body.player;
+		const match = await this.app.sdk.document.get("matches", "matches_collection", body.match_id);
+
+		if (player === user || user === match._source.owner)
+		{
+			let players =  match._source.players;
+			let team_a_players = match._source.team_a_players;
+			let team_b_players = match._source.team_b_players;
+			let i = players.indexOf(player);
+			if (i >= 0){
+				players.splice(i,1);
+			}
+			i = team_a_players.indexOf(player);
+			if (i >= 0)
+				team_a_players.splice(i,1);
+			i = team_b_players.indexOf(player);
+			if (i >= 0)
+				team_b_players.splice(i,1);
+
+			return this.app.sdk.document.update("matches", "matches_collection", body.match_id, {"players": players, "team_a_players": team_a_players, "team_b_players": team_b_players});
+
+		} else {
+			throw new BadRequestError("Can´t remove other player if you are not the owner.");
 		}
 	}
 	
