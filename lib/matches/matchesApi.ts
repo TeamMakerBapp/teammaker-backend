@@ -36,10 +36,39 @@ export class MatchesApi extends Controller {
 				cancelMatch: {
 					handler: this.cancelMatch,
 					http: [{ verb: 'post', path: 'matches-api/cancel-match'}]
+				},
+				findMyMatches: {
+					handler: this.findMyMatches,
+					http: [{ verb: 'post', path: 'matches-api/find-my-matches'}]
 				}
 			}
 		}
 		
+	}
+	
+	/*
+	 {
+	  "controller": "matches-api",
+	  "action": "findMyMatches"
+	}
+	*/
+	async findMyMatches( request: KuzzleRequest ) {
+		const user = request.getUser()._id;
+		console.log(user);
+		let query = {
+			"query": {
+			      "bool": {
+				"must": [
+				{ 
+				  "term": { 
+				    "players.keyword": user 
+				  } 
+				}
+			      ]
+			      }
+			    }
+		  };
+		return this.app.sdk.document.search("matches", "matches_collection", query); 
 	}
 
 	/*
