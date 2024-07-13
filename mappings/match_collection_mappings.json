@@ -12,6 +12,8 @@
 		"team_size": { "type": "integer" },
 		"price": { "type": "integer" },
 		"team_a_players": { "type": "keyword" },
-		"team_b_players": { "type": "keyword" }
+		"team_b_players": { "type": "keyword" },
+		"players": { "type" : "keyword" },
+		"owner": { "type": "keybowrd" }
 	}
 }
