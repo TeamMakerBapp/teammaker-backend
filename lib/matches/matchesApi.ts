@@ -32,6 +32,10 @@ export class MatchesApi extends Controller {
 				removePlayer: {
 					handler: this.removePlayer,
 					http: [{ verb: 'post', path: 'matches-api/remove-player'}]
+				},
+				cancelMatch: {
+					handler: this.cancelMatch,
+					http: [{ verb: 'post', path: 'matches-api/cancel-match'}]
 				}
 			}
 		}
@@ -92,6 +96,8 @@ export class MatchesApi extends Controller {
 		if (match._source.public == "true" || user === match._source.owner)
 		{
 			let players =  match._source.players;
+			if (players.length >= match._source.team_size * 2)
+				throw new BadRequestError("Match is already full");
 			if (players.indexOf(new_player) === -1){
 				players.push(new_player);
 			}
@@ -121,6 +127,8 @@ export class MatchesApi extends Controller {
 
 		if (player === user || user === match._source.owner)
 		{
+			if (player === match._source.owner)
+				throw new BadRequestError("The owner cannot quit the match");
 			let players =  match._source.players;
 			let team_a_players = match._source.team_a_players;
 			let team_b_players = match._source.team_b_players;
@@ -142,6 +150,29 @@ export class MatchesApi extends Controller {
 		}
 	}
 	
+	/*
+	 {
+	  "controller": "matches-api",
+	  "action": "cancelMatch",
+	  "body": {
+	    "match_id": "SlrDrJAB1gR4eFQOeRNK"
+	  }
+	}
+	*/
+	async cancelMatch(request: KuzzleRequest){
+		const match_id = request.input.body.match_id;
+		const user = request.getUser()._id;
+		const match = await this.app.sdk.document.get("matches", "matches_collection", match_id);
+		if (user === match._source.owner)
+		{ 
+			return this.app.sdk.document.delete("matches", "matches_collection", match_id);
+		}
+		else
+		{
+			throw new BadRequestError("Only the owner can cancel the match.");
+		}
+
+	}
 
 	/*
 	 {
@@ -171,7 +202,7 @@ export class MatchesApi extends Controller {
 		if (!match_data["public"])
 			match_data["public"] = "true";
 		match_data["owner"] = request.getUser()._id;
-		match_data["players"] = [];
+		match_data["players"] = [request.getUser()._id];
 		match_data["team_a_players"] = [];
 		match_data["team_b_players"] = [];
 		const response = this.app.sdk.query({
