@@ -14,7 +14,7 @@
 		"team_a_players": { "type": "keyword" },
 		"team_b_players": { "type": "keyword" },
 		"players": { "type" : "keyword" },
-		"owner": { "type": "keybowrd" },
+		"owner": { "type": "keyword" },
 		"public": { "type": "text" }
 	}
 }
