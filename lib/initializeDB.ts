@@ -11,9 +11,16 @@ export async function initializeDatabases(app : Backend){
 		await indexCreate(app, "matches");
 	}
 	if (! (await collectionExists(app, "matches", "matches_collection"))){
-		
 		const mappings = JSON.parse(fs.readFileSync("./mappings/match_collection_mappings.json", "utf-8"));
 		await collectionCreate(app, "matches", "matches_collection", mappings);
+	}
+
+	if (! (await indexExists(app, "social"))){
+		await indexCreate(app, "social");
+	}
+	if (! (await collectionExists(app, "social", "connections"))){
+		const mappings = JSON.parse(fs.readFileSync("./mappings/connections_mapping.json", "utf-8"));
+		await collectionCreate(app, "social", "connections", mappings);
 	}
 }
 

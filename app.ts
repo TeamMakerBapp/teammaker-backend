@@ -2,11 +2,14 @@
 import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
 import { MatchesApi } from "./lib/matches/matchesApi";
+import { Chat } from "./lib/controller/chat/chat";
+import { Social } from "./lib/controller/chat/social";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { initializeDatabases } from "./lib/initializeDB";
 import fs from "fs";
-declare var env : any
+
+declare var env : any;
 globalThis.env  = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
 
 var hostAddress = "localhost";
@@ -32,6 +35,10 @@ const customUser = new CustomUser(app);
 app.controller.use(customUser);
 const matchesApi = new MatchesApi(app);
 app.controller.use(matchesApi);
+const chat = new Chat(app);
+app.controller.use(chat);
+const social = new Social(app);
+app.controller.use(social);
 
 if (env.oauth) {
   app.config.content.plugins["passport-oauth"] = {

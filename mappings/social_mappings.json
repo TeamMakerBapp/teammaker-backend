@@ -1,0 +1,9 @@
+{
+	"dynamic": "true",
+	"properties": {
+		"friends" : { "type" : "keyword" },
+		"requested" : { "type" : "keyword" },
+		"requests" : { "type" : "keyword" },
+		"blocked" : { "type" : "keyword" }
+	}
+}
