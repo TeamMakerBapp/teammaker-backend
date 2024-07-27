@@ -5,6 +5,16 @@
         "login": true,
         "logout": true
       }
+    },
+    "chat": {
+      "actions": {
+        "*": true
+      }
+    },
+    "social": {
+      "actions": {
+        "*": true
+      }
     }
   }
 }

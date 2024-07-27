@@ -149,7 +149,8 @@ export class CustomUser extends Controller {
             "controller": "collection",
             "action": "exists"})["result"]) {
               const chat_mapping = JSON.parse(fs.readFileSync("./mappings/chat_collection_mapping.json", "utf-8"));
-              this.app.sdk.query({
+              await this.app.sdk.query({
+
                   "index": "chat",
                   "collection": user_data._id,
                   "controller": "collection",
@@ -158,6 +159,17 @@ export class CustomUser extends Controller {
                     "mappings": chat_mapping
                   }
               });
+              await this.app.sdk.as(user_data).document.create(
+                  "social",
+                  "connections",
+                  {
+                    friends: [],
+                    requested: [],
+                    requests: [],
+                    blocked: []
+                  },
+                  user_data._id
+              );
             }
         } else {
           throw new BadRequestError("Invalid token")

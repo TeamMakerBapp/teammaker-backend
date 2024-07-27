@@ -1,0 +1,8 @@
+{
+	"dynamic": "true",
+	"properties": {
+		"from": { "type": "keyword" },
+		"timestamp": { "type": "date" },
+		"content": { "type": "text" }
+	}
+}
