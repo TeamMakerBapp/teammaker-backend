@@ -2,8 +2,7 @@
 import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
 import { MatchesApi } from "./lib/matches/matchesApi";
-import { Chat } from "./lib/controller/chat/chat";
-import { Social } from "./lib/controller/chat/social";
+import { Chat, Social } from "./lib/controller";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { initializeDatabases } from "./lib/initializeDB";
