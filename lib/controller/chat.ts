@@ -28,7 +28,7 @@ export class Chat extends Controller {
               const response = await app.sdk.document.create(
                 "chat",
                 userId,
-                message
+                { "message" : message }
               );
               
              // await Db.documentCreate("chat", userId, message, null);
@@ -43,12 +43,25 @@ export class Chat extends Controller {
             { verb: 'post', path: '/chat/sendMessage' },
           ]
         },
+        getMessages: {
+          handler: async (request) => {
+            const userId = request.getUser()._id;
+            const { roomId, channel } = await this.app.subscription.add(
+              request.context.connection,
+              "chat",
+              userId,
+              {
+              },
+              {
+                users: "all",
+                scope: "all",
+              }
+            );
+            return { roomId, channel };
+          }
+        }
       }
     };
-  }
-  async isBlocked(){
-  }
-  async isFriend(){
   }
 }
 
