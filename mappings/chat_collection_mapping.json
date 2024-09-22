@@ -1,10 +1,9 @@
 {
-	"dynamic": "true",
+	"dynamic": "strict",
 	"properties": {
-    "_id" :          { "type": "keyword" },
     "text" :         { "type": "text" },
     "createdAt":     { "type": "date" },
-    "user"  :        { "type": "object" },
+    "user"  :        { "type": "keyword" },
     "image" :        { "type": "text" },
     "video" :        { "type": "text" },
     "audio" :        { "type": "text" },
@@ -12,6 +11,6 @@
     "sent" :         { "type": "boolean" },
     "received" :     { "type": "boolean" },
     "pending" :      { "type": "boolean" },
-    "quickReplies" : { "type": "object" }
+    "room" :         { "type": "keyword" }
   }
 }

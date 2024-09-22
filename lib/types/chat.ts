@@ -1,15 +1,9 @@
 // https://github.com/FaridSafi/react-native-gifted-chat
-//
-import { User } from 'kuzzle'
-
-export interface QuickReplies {
-}
-
 export interface IMessage {
   _id: string
   text: string
   createdAt: number
-  user: User
+  user: string 
   image?: string
   video?: string
   audio?: string
@@ -17,6 +11,5 @@ export interface IMessage {
   sent?: boolean
   received?: boolean
   pending?: boolean
-  quickReplies?: QuickReplies
+  room: string
 }
-
