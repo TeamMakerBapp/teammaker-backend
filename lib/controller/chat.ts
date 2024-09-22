@@ -1,7 +1,8 @@
 import { Controller, KuzzleRequest, BadRequestError, Backend, NameGenerator } from 'kuzzle';
+import { validateChatMessage } from "../types/chat";
 
 export class Chat extends Controller {
-  constructor (app: Backend) {
+  constructor(app: Backend) {
     super(app);
     this.name = "chat";
     // type ControllerDefinition
@@ -11,41 +12,39 @@ export class Chat extends Controller {
           handler: async request => {
             return `Hello ${request.getString('name')}!`
           },
-          http:[
+          http: [
             { verb: 'get', path: '/chat/bar' },
           ]
         },
         sendMessage: {
-          handler: async request => {
+          handler: async (request: KuzzleRequest) => {
+            const userId = request.getKuid();
+            // TODO: check if users are friends
+            const message = request.getBody();
+            if (validateChatMessage(message) || userId == null) {
+              throw new BadRequestError("Missing argument")
+            }
             try {
-              const user = request.getUser();
-              // check if users are friends
-              // TODO: how to check type?
-              const userId = request.getBodyString('userId');
-              const group = request.getBodyString('group');
-              const message = request.getBodyObject('message');
-              console.log(user, userId, message);
               const response = await app.sdk.document.create(
                 "chat",
                 userId,
-                { "message" : message }
+                message
               );
-              
-             // await Db.documentCreate("chat", userId, message, null);
-              return response; 
-           }
-           catch (e) {
-             console.log('somethign wtohrds');
-             throw new BadRequestError("Invalid request")
-           }
+              return response;
+            }
+            catch (error) {
+              throw error;
+            }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/chat/sendMessage' },
           ]
         },
         getMessages: {
           handler: async (request) => {
-            const userId = request.getUser()._id;
+            try {
+            const userId = request.getUser()?._id;
+            if( userId == null ) throw new BadRequestError("Undefined user")
             const { roomId, channel } = await this.app.subscription.add(
               request.context.connection,
               "chat",
@@ -58,6 +57,9 @@ export class Chat extends Controller {
               }
             );
             return { roomId, channel };
+            } catch (e) {
+              throw new BadRequestError("Invalid request")
+            }
           }
         }
       }

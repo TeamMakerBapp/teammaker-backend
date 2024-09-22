@@ -1,8 +1,17 @@
 {
 	"dynamic": "true",
 	"properties": {
-		"from": { "type": "keyword" },
-		"timestamp": { "type": "date" },
-		"content": { "type": "text" }
-	}
+    "_id" :          { "type": "keyword" },
+    "text" :         { "type": "text" },
+    "createdAt":     { "type": "date" },
+    "user"  :        { "type": "object" },
+    "image" :        { "type": "text" },
+    "video" :        { "type": "text" },
+    "audio" :        { "type": "text" },
+    "system":        { "type": "boolean" },
+    "sent" :         { "type": "boolean" },
+    "received" :     { "type": "boolean" },
+    "pending" :      { "type": "boolean" },
+    "quickReplies" : { "type": "object" }
+  }
 }
