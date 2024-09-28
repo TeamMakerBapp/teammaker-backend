@@ -18,6 +18,7 @@
 		"description": { "type": "text" },
 		"matches_played": { "type": "integer" },
 		"profile_picture": { "type": "binary" },
-		"pro": { "type" : "text" }
+		"pro": { "type" : "text" },
+		"device_token": { "type" : "text" }
 	}
 }

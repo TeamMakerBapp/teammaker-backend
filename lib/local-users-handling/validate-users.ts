@@ -150,7 +150,6 @@ export class CustomUser extends Controller {
             "action": "exists"})["result"]) {
               const chat_mapping = JSON.parse(fs.readFileSync("./mappings/chat_collection_mapping.json", "utf-8"));
               await this.app.sdk.query({
-
                   "index": "chat",
                   "collection": user_data._id,
                   "controller": "collection",
@@ -167,6 +166,25 @@ export class CustomUser extends Controller {
                     requested: [],
                     requests: [],
                     blocked: []
+                  },
+                  user_data._id
+              );
+              await this.app.sdk.as(user_data).document.create(
+                  "social",
+                  "profiles",
+                  {
+                    age: 0,
+                    location: "",
+                    price: 0,
+                    name: "Player",
+                    country: "",
+                    fairplay: 10,
+                    fairplay_voters: 0,
+                    description: "",
+                    matches_played: 0,
+                    profile_picture: "",
+                    pro: "false",
+                    device_token: ""
                   },
                   user_data._id
               );
