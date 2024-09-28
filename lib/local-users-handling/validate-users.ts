@@ -173,18 +173,6 @@ export class CustomUser extends Controller {
                   "social",
                   "profiles",
                   {
-                    age: 0,
-                    location: "",
-                    price: 0,
-                    name: "Player",
-                    country: "",
-                    fairplay: 10,
-                    fairplay_voters: 0,
-                    description: "",
-                    matches_played: 0,
-                    profile_picture: "",
-                    pro: "false",
-                    device_token: ""
                   },
                   user_data._id
               );
