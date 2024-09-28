@@ -11,11 +11,13 @@ export class Chat extends Controller {
           handler: async (request: KuzzleRequest) => {
             const userId = request.getKuid();
             // TODO: check if users are friends
-            const message = request.getBody();
+            // target_room can be an user or a match
+            const { target_room, message } = request.getBody();
+            // TODO: check if room exists
             try {
               const response = await app.sdk.document.create(
                 "chat",
-                userId,
+                target_room,
                 message
               );
               return response;
@@ -56,30 +58,41 @@ export class Chat extends Controller {
 }
 
 
-export function addPipeAfterSendMessage(app: Backend) {
+export function sendMsgNotification(app: Backend) {
   app.pipe.register('chat:afterSendMessage', async (request: KuzzleRequest) => {
     const urlExpoPushNotif = "https://exp.host/--/api/v2/push/send";
-    const token = "ExponentPushToken[Ba2yWxM4Oj2vzdoEi0p8Zj]"
-    try {
-      const response = await fetch(urlExpoPushNotif,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-           "to": token,
-           "title":"New message",
-           "body": "Global?"
-          })
-        });
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
+    const { target_room } = request.getBody();
+    if (await app.sdk.document.exists("social", "profiles", target_room)) {
+      const profile = await app.sdk.document.get("social", "profiles", target_room);
+      const device_token = profile?._source?.device_token;
+      if (device_token == null || device_token == "") return;
+      try {
+        const response = await fetch(urlExpoPushNotif,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+             "to": device_token,
+             "title":"TEAMAKE",
+             "body": "You have a new message"
+            })
+          });
+        if (!response.ok) {
+          console.error("Failed to send notification to user: ", target_room)
+        }
+        const json = await response.json();
+        console.log(json);
+      } catch (error) {
+        console.error(error.message);
       }
-      const json = await response.json();
-      console.log(json);
-    } catch (error) {
-      console.error(error.message);
+      //TODO: catch error if notification fails
+
+    } else {
+      console.log(target_room, "doesn't exists");
+      // TODO: implement match notifications
+      //
     }
   });
 }

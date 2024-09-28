@@ -10,7 +10,6 @@
     "system":        { "type": "boolean" },
     "sent" :         { "type": "boolean" },
     "received" :     { "type": "boolean" },
-    "pending" :      { "type": "boolean" },
-    "room" :         { "type": "keyword" }
+    "pending" :      { "type": "boolean" }
   }
 }
