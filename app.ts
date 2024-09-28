@@ -88,10 +88,8 @@ app.start().then(async function (){
     await app.sdk.security.createOrReplaceRole("role-validated-users", roleValidatedUsers);
     await app.sdk.security.createOrReplaceProfile("profile-non-validated-users", profileNonValidatedUsers);
     await app.sdk.security.createOrReplaceProfile("profile-validated-users", profileValidatedUsers);
-    if(env.smtpConfig){ 
-      if (env.smtpConfig.enable){
+    if (env.smtpConfig.enable){
         app.configureSmtp(env.smtpConfig);
-      }
     } else {
       console.log("\x1b[37;46;1mSMTP not configured\x1b[0m");
     }

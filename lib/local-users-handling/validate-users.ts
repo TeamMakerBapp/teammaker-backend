@@ -97,7 +97,7 @@ export class CustomUser extends Controller {
         let html = fs.readFileSync('html/validation-mail.html', 'utf-8');
         html = html.replace("{{link}}", url);
 	html = html.replace("{{date}}", (new Date()).toString());
-        if (global.env.smtp) {
+        if (global.env.smtpConfig.enable) {
           this.app.sdk.query( {
             "controller": "hermes/smtp",
             "action": "sendEmail",
