@@ -195,14 +195,41 @@ export class Social extends Controller {
             { verb: 'post', path: '/social/unblockUser' },
           ]
         },
+        getProfile: {
+          handler: async request => {
+            try {
+              const author_id = request.getKuid();
+              const author_profile = await app.sdk.document.get("social", "profiles", author_id);
+              return author_profile;
+            } catch(error) {
+              console.log("Error getting profile", error);
+              throw new BadRequestError("Invalid request")
+            }
+          },
+          http:[
+            { verb: 'get', path: '/social/profile' },
+          ]
+        },
+        updateProfile: {
+          handler: async request => {
+            try {
+              const author_id = request.getKuid();
+              const parcial_profile = request.getBody();
+              if (parcial_profile == null) {
+                throw new BadRequestError("Missing body")
+              }
+              app.sdk.as({_id: author_id}).document.upsert("social", "profiles", author_id, parcial_profile);
+            } catch(error) {
+              console.log("Error updating profile", error);
+              throw new BadRequestError("Invalid request")
+            }
+          },
+          http:[
+            { verb: 'post', path: '/social/profile' },
+          ]
+        },
       }
     };
-  }
-  async isBlocked(){
-  }
-  async isFriend(){
-  }
-  async isRequested(){
   }
 }
 
