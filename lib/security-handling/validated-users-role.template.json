@@ -2,8 +2,7 @@
   "controllers": {
     "auth": {
       "actions": {
-        "login": true,
-        "logout": true
+        "*": true
       }
     },
     "chat": {
@@ -12,6 +11,11 @@
       }
     },
     "social": {
+      "actions": {
+        "*": true
+      }
+    },
+    "matches": {
       "actions": {
         "*": true
       }

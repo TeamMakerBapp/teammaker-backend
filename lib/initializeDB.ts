@@ -18,7 +18,6 @@ export async function initializeDatabases(app : Backend){
 		await indexCreate(app, "social");
 	}
 	if (! (await collectionExists(app, "social", "profiles"))){
-		
 		const mappings = JSON.parse(fs.readFileSync("./mappings/profile_collection_mappings.json", "utf-8"));
 		await collectionCreate(app, "social", "profiles", mappings);
 	}
