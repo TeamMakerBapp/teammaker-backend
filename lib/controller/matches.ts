@@ -1,7 +1,7 @@
 import { Controller, KuzzleRequest, Backend, BadRequestError, InternalError, ForbiddenError } from 'kuzzle';
 //const JWT = require('jsonwebtoken');
 
-export class MatchesApi extends Controller {
+export class Matches extends Controller {
   constructor(app: Backend) {
     super(app);
     this.name = "matches";

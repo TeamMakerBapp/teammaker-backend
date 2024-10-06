@@ -1,8 +1,6 @@
-/* eslint-disable sort-keys */
 import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
-import { MatchesApi } from "./lib/matches/matchesApi";
-import { Chat, Social } from "./lib/controller";
+import { Chat, Social, Matches } from "./lib/controller";
 import { sendPushNotification } from "./lib/hook";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
@@ -35,8 +33,8 @@ addPipeAfterCreateRestrictedUser(app);
 
 const customUser = new CustomUser(app);
 app.controller.use(customUser);
-const matchesApi = new MatchesApi(app);
-app.controller.use(matchesApi);
+const matches = new Matches(app);
+app.controller.use(matches);
 const chat = new Chat(app);
 app.controller.use(chat);
 const social = new Social(app);
