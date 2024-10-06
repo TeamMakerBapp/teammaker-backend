@@ -1,9 +1,9 @@
 /* eslint-disable sort-keys */
-import { KuzzleRequest } from 'kuzzle'; 
 import { MyApplication, MyApplicationConfig} from "./lib/MyApplication";
 import { CustomUser } from "./lib/local-users-handling/validate-users";
 import { MatchesApi } from "./lib/matches/matchesApi";
-import { Chat, Social, sendPushNotification } from "./lib/controller";
+import { Chat, Social } from "./lib/controller";
+import { sendPushNotification } from "./lib/hook";
 import { addPipeBeforeCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { addPipeAfterCreateRestrictedUser } from "./lib/local-users-handling/pipeCreateRestrictedUser";
 import { initializeDatabases } from "./lib/initializeDB";
@@ -41,8 +41,7 @@ const chat = new Chat(app);
 app.controller.use(chat);
 const social = new Social(app);
 app.controller.use(social);
-
-app.hook.register('notify:document', (request: KuzzleRequest)=>{ console.error(`New document created. Request: ${JSON.stringify(request)}`)});
+app.hook.register('push:notification', sendPushNotification)
 
 if (env.oauth) {
   app.config.content.plugins["passport-oauth"] = {

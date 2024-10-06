@@ -66,9 +66,13 @@ export class Chat extends Controller {
           const response = await this.sdk.as({ "_id": author_id }).document.create(
             "chat",
             target,
-            message
+            message,
+            null,
+            { triggerEvents: true }
           );
-          console.log("Message sent: ", response)
+          if (response._id != null && response._id != ""){
+            this.app.trigger('push:notification', { type: "chat", content: response, target: target })
+          }
         }
         catch (error) {
           throw error;
@@ -79,52 +83,4 @@ export class Chat extends Controller {
       throw new BadRequestError("Undefined user")
     }
   }
-
 }
-
-
-//export function sendMsgNotification(app: Backend) {
-//  app.pipe.register('chat:afterSendMessage', async (request: KuzzleRequest) => {
-//    const { target_room } = request.getBody();
-//    if (await app.sdk.document.exists("social", "profiles", target_room)) {
-//      const profile = await app.sdk.document.get("social", "profiles", target_room);
-//      const device_token = profile?._source?.device_token;
-//      if (device_token == null || device_token == "") return;
-//      //TODO: catch error if notification fails
-//      await sendNotification(device_token);
-//    } else {
-//      // TODO: implement match notifications
-//      if (await app.sdk.document.exists("matches", "matches_collection", target_room)) {
-//        const { players }= await app.sdk.document.get("matches", "matches_collection", target_room);
-//        
-//        
-//
-//
-//      }
-//    });
-//}
-//
-//async function sendNotification(device_token: String) {
-//  const urlExpoPushNotif = "https://exp.host/--/api/v2/push/send";
-//  try {
-//    const response = await fetch(urlExpoPushNotif,
-//      {
-//        method: "POST",
-//        headers: {
-//          "Content-Type": "application/json",
-//        },
-//        body: JSON.stringify({
-//          "to": device_token,
-//          "title": "TEAMAKE",
-//          "body": "You have a new message"
-//        })
-//      });
-//    if (!response.ok) {
-//      console.error("Failed to send notification to user")
-//    }
-//    const json = await response.json();
-//    console.log(json);
-//  } catch (error) {
-//    console.error(error.message);
-//  }
-//}
