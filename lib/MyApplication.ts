@@ -6,7 +6,6 @@ import { HermesMessengerPlugin } from "kuzzle-plugin-hermes-messenger";
 export type MyApplicationConfig = {
 	hostAddress: string, 
 	deeplink: string,
-	hostPort: string
 };
 
 export class MyApplication extends Backend {

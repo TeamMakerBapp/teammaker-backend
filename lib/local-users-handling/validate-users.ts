@@ -92,7 +92,7 @@ export class CustomUser extends Controller {
             "ValidationToken": t 
         });
         let myApp = this.app as MyApplication;
-        let url = `${myApp.configuration.hostAddress}:${myApp.configuration.hostPort}/_/custom-user/validate?code=${t}`;
+        let url = `${myApp.configuration.hostAddress}/_/custom-user/validate?code=${t}`;
         const user = await this.app.sdk.security.getUser(id);
         let html = fs.readFileSync('html/validation-mail.html', 'utf-8');
         html = html.replace("{{link}}", url);
