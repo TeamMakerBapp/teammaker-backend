@@ -1,5 +1,4 @@
 import { Controller, KuzzleRequest , Backend, NameGenerator, BadRequestError } from 'kuzzle';
-import { Db } from "lib/utils/db";
 
 export class Social extends Controller {
   constructor (app: Backend) {
