@@ -1,4 +1,4 @@
-import { Controller, KuzzleRequest, Backend, BadRequestError, InternalError, ForbiddenError} from 'kuzzle';
+import { Backend } from 'kuzzle';
 import fs from "fs";
 
 export async function initializeDatabases(app : Backend){
