@@ -11,8 +11,9 @@ import fs from "fs";
 declare var env : any;
 globalThis.env  = JSON.parse(fs.readFileSync("./.env.json", "utf-8"));
 
-var hostAddress = "localhost";
+var hostAddress = "http://localhost";
 var deeplink = "teamake://";
+var hostPort = '7512'
 if (env.config && env.config.hostAddress){
 	if (env.config.hostAddress){
 		hostAddress = env.config.hostAddress;	
@@ -20,10 +21,14 @@ if (env.config && env.config.hostAddress){
 	if (env.config.deeplink){
 		deeplink = env.config.deeplink;
 	}
+	if (env.config.hostPort){
+		hostPort = env.config.hostPort;
+	}
 }
 const config: MyApplicationConfig = {
     hostAddress: hostAddress,
-    deeplink: deeplink
+    deeplink: deeplink,
+    hostPort: hostPort
 };
 const app = new MyApplication(config);
 addPipeBeforeCreateRestrictedUser(app);
@@ -52,7 +57,7 @@ if (env.oauth) {
             "248704848225-abvib4t5sh7jpolqurk39vcioklfdgo2.apps.googleusercontent.com",
           clientSecret: env.oauth.clientsecret,
           //  "callbackURL": "http://149.50.128.59:7512/_login/google",
-          callbackURL: "http://localhost:7512/_/custom-user/auth-code",
+          callbackURL: `${config.hostAddress}:${config.hostPort}/_/custom-user/auth-code`,
           profileFields: ["id", "name", "picture", "email", "gender"],
         },
         // Attributes you want to persist in the user credentials object if the user doesn't exist

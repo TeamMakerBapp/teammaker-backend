@@ -28,12 +28,12 @@ export class CustomUser extends Controller {
             { verb: 'get', path: 'custom-user/send-validation-mail' },
           ]
         },
-	authCode: {
-	  handler: this.authCode,
-	  http:[
+        authCode: {
+          handler: this.authCode,
+          http:[
             { verb: 'get', path: 'custom-user/auth-code' }
-	  ]
-	}
+          ]
+        }
       }
     };
   }
@@ -91,12 +91,12 @@ export class CustomUser extends Controller {
         this.app.sdk.security.updateUser(id, {
             "ValidationToken": t 
         });
-	let myApp = this.app as MyApplication;
-        let url = "http://"+myApp.configuration.hostAddress+":7512/_/custom-user/validate?code="+t;
+        let myApp = this.app as MyApplication;
+        let url = `${myApp.configuration.hostAddress}:${myApp.configuration.hostPort}/_/custom-user/validate?code=${t}`;
         const user = await this.app.sdk.security.getUser(id);
         let html = fs.readFileSync('html/validation-mail.html', 'utf-8');
         html = html.replace("{{link}}", url);
-	html = html.replace("{{date}}", (new Date()).toString());
+        html = html.replace("{{date}}", (new Date()).toString());
         if (global.env.smtpConfig.enable) {
           this.app.sdk.query( {
             "controller": "hermes/smtp",

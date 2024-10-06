@@ -2,22 +2,17 @@
 	"dynamic": "true",
 	"properties": {
 		"id": { "type": "keyword" },
-		"club": {
-			"properties": {
-				"location": { "type": "geo_point" },
-				"address": { "type": "text" }
-			}
-		},
 		"age": { "type": "integer" },
 		"location": { "type": "geo_point" },
-		"price": { "type": "integer" },
 		"name": { "type": "text" },
+		"last_name": { "type": "text" },
 		"country": { "type" : "text" },
 		"fairplay": { "type": "integer" },
 		"fairplay_voters": { "type": "integer" },
 		"description": { "type": "text" },
 		"matches_played": { "type": "integer" },
 		"profile_picture": { "type": "binary" },
+		"preffered_position" : { "type": "text" },
 		"pro": { "type" : "text" },
 		"device_token": { "type" : "text" }
 	}

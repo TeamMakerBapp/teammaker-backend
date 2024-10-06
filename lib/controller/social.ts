@@ -199,7 +199,13 @@ export class Social extends Controller {
           handler: async request => {
             try {
               const author_id = request.getKuid();
-              const author_profile = await app.sdk.document.get("social", "profiles", author_id);
+              var { target_id } = request.input.args;
+			  if (!target_id) target_id = author_id;
+              const author_profile = await app.sdk.document.get("social", "profiles", target_id);
+              if ( target_id != author_id ){
+                  delete target_id.id;
+				  delete target_id.device_token;
+              }
               return author_profile;
             } catch(error) {
               console.log("Error getting profile", error);
