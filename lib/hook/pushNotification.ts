@@ -1,10 +1,13 @@
 export async function sendPushNotification(notification) {
   if (notification.type == "chat") {
+    const app = notification.app;
     const urlExpoPushNotif = "https://exp.host/--/api/v2/push/send";
     const target = notification.target
-    const profile = await this.app.sdk.document.get("social", "profiles", target);
-    const device_token = profile?._source?.device_token;
-    if (device_token == null || device_token == "") return;
+    const profile = await app.sdk.document.get("social", "profiles", target);
+    let device_token = profile?._source?.device_token;
+    if (device_token == null || device_token == "") {
+      return
+    }
     try {
       const response = await fetch(urlExpoPushNotif,
         {
@@ -14,8 +17,9 @@ export async function sendPushNotification(notification) {
           },
           body: JSON.stringify({
             "to": device_token,
-            "title": `New message from ${notification.content.user}`,
-            "body": `${notification.content.text}`
+            //TODO: use user nickname
+            "title": `New message from ${notification.content._source.user}`,
+            "body": `${notification.content._source.text}`
           })
         });
       if (!response.ok) {
@@ -24,7 +28,7 @@ export async function sendPushNotification(notification) {
       const json = await response.json();
       console.log(json);
     } catch (error) {
-      console.error(error.message);
+      console.error("Failed to send notification. Error: ", error.message);
     }
   }
 }

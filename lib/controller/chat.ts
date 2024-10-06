@@ -27,6 +27,7 @@ export class Chat extends Controller {
         "chat",
         userId,
         {
+          //TODO filtering? Delete older messages ts <?
         },
         {
           users: "all",
@@ -71,7 +72,7 @@ export class Chat extends Controller {
             { triggerEvents: true }
           );
           if (response._id != null && response._id != ""){
-            this.app.trigger('push:notification', { type: "chat", content: response, target: target })
+            this.app.trigger('push:notification', { type: "chat", content: response, target: target , app: this.app})
           }
         }
         catch (error) {
