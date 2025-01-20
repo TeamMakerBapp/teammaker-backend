@@ -214,7 +214,7 @@ export class Matches extends Controller {
     const { match_data } = request.input.body;
     //TODO: validate that user can create matches
     //const {jwt} = request.input;
-    if (match_data?.public == null)
+    if (match_data?.public === null || match_data?.public === undefined)
       match_data["public"] = true;
     const user = request.getUser()
     match_data["owner"] = user._id;

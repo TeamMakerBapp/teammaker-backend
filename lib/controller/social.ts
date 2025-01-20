@@ -1,7 +1,7 @@
-import { Controller, KuzzleRequest , Backend, NameGenerator, BadRequestError } from 'kuzzle';
+import { Controller, KuzzleRequest, Backend, NameGenerator, BadRequestError } from 'kuzzle';
 
 export class Social extends Controller {
-  constructor (app: Backend) {
+  constructor(app: Backend) {
     super(app);
     this.name = "social";
     // type ControllerDefinition
@@ -11,41 +11,64 @@ export class Social extends Controller {
           handler: async request => {
             return `Hello ${request.getString('name')}!`
           },
-          http:[
+          http: [
             { verb: 'get', path: '/social/bar' },
-          ] },
+          ]
+        },
+        getFriends: {
+          handler: async request => {
+            try {
+              const author_id = request.getKuid();
+              const author_connections = await app.sdk.document.get("social", "connections", author_id);
+
+              if (!author_connections._source.friends || author_connections._source.friends.length === 0) {
+                return "You have no friends.";
+              }
+
+              return {
+                friends: author_connections._source.friends
+              };
+            } catch (error) {
+              console.log("Error getting friends list", error);
+              throw new BadRequestError("Invalid request");
+            }
+          },
+          http: [
+            { verb: 'get', path: '/social/friends' }
+          ]
+        },
         addFriend: {
           handler: async request => {
             try {
               const author_id = request.getKuid();
               const target_id = request.getBodyString('id');
-              if(author_id == target_id){
+              if (author_id == target_id) {
                 return "Error: Target id is your user id";
               }
               const target_connections = await app.sdk.document.get("social", "connections", target_id);
               const author_connections = await app.sdk.document.get("social", "connections", author_id);
-              if(target_connections._source.blocked.includes(author_id)){
+              if (target_connections._source.blocked.includes(author_id)) {
                 return "Error: The target user has blocked you.";
               }
-              if(target_connections._source.friends.includes(author_id)){
+              if (target_connections._source.friends.includes(author_id)) {
                 return "You are already friends with this user.";
               }
-              if(target_connections._source.requests.includes(author_id)){
+              if (target_connections._source.requests.includes(author_id)) {
                 return "You already have sent an a request to this user.";
               }
-              if(target_connections._source.requested.includes(author_id)){
+              if (target_connections._source.requested.includes(author_id)) {
                 return "You already have a request from this user.";
               }
               target_connections._source.requests.push(author_id);
               author_connections._source.requested.push(target_id);
-              app.sdk.as({_id: author_id}).document.update("social", "connections", author_id, author_connections._source);
-              app.sdk.as({_id: target_id}).document.update("social", "connections", target_id, target_connections._source);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.update("social", "connections", author_id, author_connections._source);
+              app.sdk.as({ _id: target_id }).document.update("social", "connections", target_id, target_connections._source);
+            } catch (error) {
               console.log(error);
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/addFriend' },
           ]
         },
@@ -54,26 +77,26 @@ export class Social extends Controller {
             try {
               const author_id = request.getKuid();
               const target_id = request.getBodyString('id');
-              if(author_id == target_id){
+              if (author_id == target_id) {
                 return "Error: Target id is your user id";
               }
               const target_connections = await app.sdk.document.get("social", "connections", target_id);
               const author_connections = await app.sdk.document.get("social", "connections", author_id);
-              if(!target_connections._source.friends.includes(author_id)){
+              if (!target_connections._source.friends.includes(author_id)) {
                 return "Error: Target is not your friend";
               }
               let i = target_connections._source.friends.indexOf(author_id);
               target_connections._source.friends.splice(i, 1);
               i = author_connections._source.friends.indexOf(target_id);
               author_connections._source.friends.splice(i, 1);
-              app.sdk.as({_id: author_id}).document.update("social", "connections", author_id, author_connections._source);
-              app.sdk.as({_id: target_id}).document.update("social", "connections", target_id, target_connections._source);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.update("social", "connections", author_id, author_connections._source);
+              app.sdk.as({ _id: target_id }).document.update("social", "connections", target_id, target_connections._source);
+            } catch (error) {
               console.log(error);
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/deleteFriend' },
           ]
         },
@@ -82,12 +105,12 @@ export class Social extends Controller {
             try {
               const author_id = request.getKuid();
               const target_id = request.getBodyString('id');
-              if(author_id == target_id){
+              if (author_id == target_id) {
                 return "Error: Target id is your user id";
               }
               const target_connections = await app.sdk.document.get("social", "connections", target_id);
               const author_connections = await app.sdk.document.get("social", "connections", author_id);
-              if(!target_connections._source.requested.includes(author_id)){
+              if (!target_connections._source.requested.includes(author_id)) {
                 return "Error: Forbidden. You cannot accept a non-existent request.";
               }
               let i = target_connections._source.requested.indexOf(author_id);
@@ -96,14 +119,14 @@ export class Social extends Controller {
               i = author_connections._source.requests.indexOf(target_id);
               author_connections._source.requests.splice(i, 1);
               author_connections._source.friends.push(target_id);
-              app.sdk.as({_id: author_id}).document.update("social", "connections", author_id, author_connections._source);
-              app.sdk.as({_id: target_id}).document.update("social", "connections", target_id, target_connections._source);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.update("social", "connections", author_id, author_connections._source);
+              app.sdk.as({ _id: target_id }).document.update("social", "connections", target_id, target_connections._source);
+            } catch (error) {
               console.log(error);
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/acceptFriend' },
           ]
         },
@@ -112,25 +135,25 @@ export class Social extends Controller {
             try {
               const author_id = request.getKuid();
               const target_id = request.getBodyString('id');
-              if(author_id == target_id){
+              if (author_id == target_id) {
                 return "Error: Target id is your user id";
               }
               const target_connections = await app.sdk.document.get("social", "connections", target_id);
               const author_connections = await app.sdk.document.get("social", "connections", author_id);
-              if(!target_connections._source.requested.includes(author_id)){
+              if (!target_connections._source.requested.includes(author_id)) {
                 return "Error: Forbidden. You cannot decline a non-existent request.";
               }
               let i = target_connections._source.requested.indexOf(author_id);
               target_connections._source.requested.splice(i, 1);
               i = author_connections._source.requests.indexOf(target_id);
               author_connections._source.requests.splice(i, 1);
-              app.sdk.as({_id: author_id}).document.update("social", "connections", author_id, author_connections._source);
-              app.sdk.as({_id: target_id}).document.update("social", "connections", target_id, target_connections._source);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.update("social", "connections", author_id, author_connections._source);
+              app.sdk.as({ _id: target_id }).document.update("social", "connections", target_id, target_connections._source);
+            } catch (error) {
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/declineFriend' },
           ]
         },
@@ -139,12 +162,12 @@ export class Social extends Controller {
             try {
               const author_id = request.getKuid();
               const target_id = request.getBodyString('id');
-              if(author_id == target_id){
+              if (author_id == target_id) {
                 return "Error: Target id is your user id";
               }
               const target_connections = await app.sdk.document.get("social", "connections", target_id);
               const author_connections = await app.sdk.document.get("social", "connections", author_id);
-              if(author_connections._source.blocked.includes(target_id)){
+              if (author_connections._source.blocked.includes(target_id)) {
                 return "You have already blocked this user"
               }
               let i = target_connections._source.requested.indexOf(author_id);
@@ -161,13 +184,13 @@ export class Social extends Controller {
               author_connections._source.friends.splice(i, 1);
 
               author_connections._source.blocked.push(target_id);
-              app.sdk.as({_id: author_id}).document.update("social", "connections", author_id, author_connections._source);
-              app.sdk.as({_id: target_id}).document.update("social", "connections", target_id, target_connections._source);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.update("social", "connections", author_id, author_connections._source);
+              app.sdk.as({ _id: target_id }).document.update("social", "connections", target_id, target_connections._source);
+            } catch (error) {
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/blockUser' },
           ]
         },
@@ -176,21 +199,21 @@ export class Social extends Controller {
             try {
               const author_id = request.getKuid();
               const target_id = request.getBodyString('id');
-              if(author_id == target_id) {
+              if (author_id == target_id) {
                 return "Error: Target id is your user id";
               }
               const author_connections = await app.sdk.document.get("social", "connections", author_id);
-              if(!author_connections._source.blocked.includes(target_id)){
+              if (!author_connections._source.blocked.includes(target_id)) {
                 return "User is not bocked.";
               }
               const i = author_connections._source.blocked.indexOf(target_id);
               author_connections._source.blocked.splice(i, 1);
-              app.sdk.as({_id: author_id}).document.update("social", "connections", author_id, author_connections._source);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.update("social", "connections", author_id, author_connections._source);
+            } catch (error) {
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/unblockUser' },
           ]
         },
@@ -199,19 +222,19 @@ export class Social extends Controller {
             try {
               const author_id = request.getKuid();
               var { target_id } = request.input.args;
-			  if (!target_id) target_id = author_id;
+              if (!target_id) target_id = author_id;
               const author_profile = await app.sdk.document.get("social", "profiles", target_id);
-              if ( target_id != author_id ){
-                  delete target_id.id;
-				  delete target_id.device_token;
+              if (target_id != author_id) {
+                delete target_id.id;
+                delete target_id.device_token;
               }
               return author_profile;
-            } catch(error) {
+            } catch (error) {
               console.log("Error getting profile", error);
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'get', path: '/social/profile' },
           ]
         },
@@ -223,13 +246,13 @@ export class Social extends Controller {
               if (parcial_profile == null) {
                 throw new BadRequestError("Missing body")
               }
-              app.sdk.as({_id: author_id}).document.upsert("social", "profiles", author_id, parcial_profile);
-            } catch(error) {
+              app.sdk.as({ _id: author_id }).document.upsert("social", "profiles", author_id, parcial_profile);
+            } catch (error) {
               console.log("Error updating profile", error);
               throw new BadRequestError("Invalid request")
             }
           },
-          http:[
+          http: [
             { verb: 'post', path: '/social/profile' },
           ]
         },
