@@ -217,6 +217,35 @@ export class Social extends Controller {
             { verb: 'post', path: '/social/unblockUser' },
           ]
         },
+        searchByName: {
+          handler: async( request:KuzzleRequest) => {
+            try {
+              const name = request.getString('name');
+              if (!name) {
+                throw new BadRequestError("Name parameter is required.");
+              }
+
+              const results = await app.sdk.document.search("social", "profiles", {
+                query: {
+                  match: {
+                    name: name 
+                  }
+                }
+              });
+
+              return {
+                total: results.total,
+                hits: results.hits.map(hit => hit._source),
+              };
+            } catch (error) {
+              console.log("Error searching by name", error);
+              throw new BadRequestError("Invalid request");
+            }
+          },
+          http: [
+            { verb: 'get', path: '/social/searchByName' },
+          ]
+        },
         getProfile: {
           handler: async request => {
             try {
