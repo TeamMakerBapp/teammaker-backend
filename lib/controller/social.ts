@@ -1,10 +1,4 @@
-import {
-  Controller,
-  KuzzleRequest,
-  Backend,
-  NameGenerator,
-  BadRequestError,
-} from "kuzzle";
+import { Controller, KuzzleRequest, Backend, BadRequestError } from 'kuzzle';
 
 export class Social extends Controller {
   constructor(app: Backend) {
@@ -372,6 +366,33 @@ export class Social extends Controller {
           },
           http: [
             { verb: 'get', path: '/social/searchByName' },
+          ]
+        },
+        searchById: {
+          handler: async( request:KuzzleRequest) => {
+            try {
+              const id = request.getString('id');
+              if (!id) {
+                throw new BadRequestError("Id parameter is required.");
+              }
+              const results = await app.sdk.document.search("social", "profiles", {
+                query: {
+                  match: {
+                    _id: id
+                  }
+                }
+              });
+              return {
+                total: results.total,
+                hits: results.hits.map(hit => hit._source),
+              };
+            } catch (error) {
+              console.log("Error searching by name", error);
+              throw new BadRequestError("Invalid request");
+            }
+          },
+          http: [
+            { verb: 'get', path: '/social/searchById' },
           ]
         },
         getProfile: {
